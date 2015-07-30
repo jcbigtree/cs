@@ -293,16 +293,7 @@ class L1EqualitySolver(BaseNewton):
 ###################################################################################################
 if __name__ == '__main__':
     
-    #m = 5
-    #dim = 20
-    #A = np.random.rand(m, dim)    
-    #x_opt = np.random.rand(dim)    
-    #b = np.dot(A, x_opt)
-    
-    #print A
-    #print b
-    
-    
+  
     from cs.benchmark import random_min_l1_with_equality_constraints
     
     n_variables = 512    
