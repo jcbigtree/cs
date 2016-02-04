@@ -71,7 +71,6 @@ for i = 1 : max_iters
     % Real work here
     Qn = diag((xks(:,end).^2 + epsilon).^(1-p*0.5));
     x = Qn*A'*inv(A*Qn*A')*b;    
-    %x = Qn*A'*diag(1./diag(A*Qn*A'))*b;
 
     % Generate epsilon sequence         
     if strcmp(epsilon_sequence,'none')
