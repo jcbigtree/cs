@@ -22,6 +22,7 @@ function [x, xks, residuals, executed_iters] = irls(A, b, opts)
 %
 %              opts.verbose     -  true or false or a number 
 %
+%              opts.l2_solver   - 'direct', or 'pcg' or 'lsqlin'
 %
 % Outputs: x         - transformed signal in the frequency domain  
 %          xks       - all intermediate x
@@ -68,9 +69,23 @@ executed_iters = 0;
 
 for i = 1 : max_iters     
     
-    % Real work here
-    Qn = diag((xks(:,end).^2 + epsilon).^(1-p*0.5));
-    x = Qn*A'*inv(A*Qn*A')*b;    
+    % Slove a weighted constrained least square problem
+    if strcmp(opts.l2_solver, 'pcg')
+        Qn = diag((xks(:,end).^2 + epsilon).^(1-p*0.5));
+        [xg, flag] = pcg(A*Qn*A',b,1e-6,100);
+        x = Qn*A'*xg;
+    elseif strcmp(opts.l2_solver, 'lsqlin') 
+        C = sqrt(diag((xks(:,end).^2 + epsilon).^(p*0.5-1)));
+        d = zeros(size(C,1),1);
+        options = optimset('Algorithm','trust-region-reflective','Display','off','LargeScale','off');
+        x = lsqlin(C, d, [], [], A, b, [], [], [], options);    
+    else
+        if ~strcmp(opts.l2_solver, 'direct')
+            warning('opts.l2_solver is not set properly, use default.');
+        end
+        Qn = diag((xks(:,end).^2 + epsilon).^(1-p*0.5));
+        x = Qn*A'*inv(A*Qn*A')*b;    
+    end   
 
     % Generate epsilon sequence         
     if strcmp(epsilon_sequence,'none')
