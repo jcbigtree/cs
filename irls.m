@@ -84,7 +84,7 @@ for i = 1 : max_iters
             warning('opts.l2_solver is not set properly, use default.');
         end
         Qn = diag((xks(:,end).^2 + epsilon).^(1-p*0.5));
-        x = Qn*A'*inv(A*Qn*A')*b;    
+        x = Qn*A'*((A*Qn*A')\b);
     end   
 
     % Generate epsilon sequence         
